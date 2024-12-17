@@ -19,8 +19,8 @@ def inventory_list(request):
 
 
 @login_required
-def per_product_view(request, pk):
-    inventory = get_object_or_404(Inventory, pk=pk)
+def per_product_view(request, id):
+    inventory = get_object_or_404(Inventory, pk=id)
     context = {
         'inventory': inventory,
     }
