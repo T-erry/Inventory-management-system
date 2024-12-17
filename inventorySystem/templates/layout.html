@@ -25,6 +25,9 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'inventory_list'%}">Home</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'add_inventory'%}">Add inventory</a>
+              </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'logout'%}">Logout</a>

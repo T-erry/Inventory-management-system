@@ -1,6 +1,7 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Inventory
 from django.contrib.auth.decorators import login_required
+from .forms import AddInventoryForm
 
 
 
@@ -26,3 +27,26 @@ def per_product_view(request, id):
     }
 
     return render(request, "inventory/per_product.html", context=context)
+
+
+@login_required
+def add_inventory(request):
+    if request.method == "POST":
+        add_form = AddInventoryForm(data=request.POST)  # Populate the form with POST data
+        # Check if all fields are valid
+        if add_form.is_valid():
+            # Create an unsaved instance
+            new_inventory = add_form.save(commit=False)
+            # Calculate the total sales
+            new_inventory.sales = float(add_form.cleaned_data['cost_per_item']) * float(add_form.cleaned_data['quantity_sold'])
+            new_inventory.save()
+            return redirect("/inventory/")
+    else:
+        # Create an empty form for GET requests
+        add_form = AddInventoryForm()
+
+    return render(request, "inventory/add_inventory.html", {"form": add_form})
+
+
+        
+

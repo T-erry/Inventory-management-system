@@ -1,0 +1,20 @@
+{% extends "../layout.html" %}
+{% load static   %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset>
+                <legend class="border-bottom pb-2 mb-4 text-center">Add Inventory Form</legend>
+                <div class="form-group">
+                    {{ form|crispy }}
+                </div>
+                <div class="form-group pt-4">
+                    <button type="submit" class="btn btn-outline-success">Add inventory</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+{% endblock %}
