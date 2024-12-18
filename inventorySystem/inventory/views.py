@@ -32,7 +32,8 @@ def per_product_view(request, id):
 @login_required
 def add_inventory(request):
     if request.method == "POST":
-        add_form = AddInventoryForm(data=request.POST)  # Populate the form with POST data
+        # Populate the form with POST data
+        add_form = AddInventoryForm(data=request.POST)  
         # Check if all fields are valid
         if add_form.is_valid():
             # Create an unsaved instance
@@ -45,7 +46,16 @@ def add_inventory(request):
         # Create an empty form for GET requests
         add_form = AddInventoryForm()
 
+
     return render(request, "inventory/add_inventory.html", {"form": add_form})
+
+@login_required
+def delete_inventory(request, id):
+    inventory = get_object_or_404(Inventory, pk=id)
+    inventory.delete()
+    return redirect("/inventory/")
+
+
 
 
         

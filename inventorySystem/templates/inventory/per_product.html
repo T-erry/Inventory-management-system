@@ -67,7 +67,8 @@
                     <h3 class="text-center">{{inventory.last_sale_date}} </h3>
                   </div>
                   
-            </div>        
+            </div>    
+            <a class="btn btn-danger btn-sm" href="{% url 'delete_inventory' inventory.id %}">Delete Inventory</a>    
            
         </div>
     </div>
