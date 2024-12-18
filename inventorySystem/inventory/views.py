@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from .models import Inventory
 from django.contrib.auth.decorators import login_required
 from .forms import AddInventoryForm, UpdateInventoryForm
+from django.contrib import messages
 
 
 
@@ -41,6 +42,7 @@ def add_inventory(request):
             # Calculate the total sales
             new_inventory.sales = float(add_form.cleaned_data['cost_per_item']) * float(add_form.cleaned_data['quantity_sold'])
             new_inventory.save()
+            messages.success(request, "Successfully Added Inventory" )
             return redirect("/inventory/")
     else:
         # Create an empty form for GET requests
@@ -53,8 +55,10 @@ def add_inventory(request):
 def delete_inventory(request, id):
     inventory = get_object_or_404(Inventory, pk=id)
     inventory.delete()
+    messages.error(request, "Inventory Deleted")
     return redirect("/inventory/")
 
+@login_required
 def update_inventory(request, id):
     inventory = get_object_or_404(Inventory, pk=id)
     
@@ -67,6 +71,7 @@ def update_inventory(request, id):
             inventory.quantity_sold = update_form.cleaned_data['quantity_sold']
             inventory.sales = float(update_form.cleaned_data['cost_per_item']) * float(update_form.cleaned_data['quantity_sold'])
             inventory.save()
+            messages.success(request, "Inventory Updated")
             return redirect(f"/inventory/per_product/{id}")
     else:
          # Initialize form with inventory data for GET request

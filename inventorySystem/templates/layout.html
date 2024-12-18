@@ -25,10 +25,11 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'inventory_list'%}">Home</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'add_inventory'%}">Add inventory</a>
-              </li>
+              
             {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'add_inventory'%}">Add inventory</a>
+            </li>
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'logout'%}">Logout</a>
               </li>
@@ -46,7 +47,16 @@
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10 col-sm-12 col-xm-12">
+              {% if messages%}
+                  {%for message in messages %}
+                    <div class="alert alert-{{message.tags}} mt-4">
+                        {{message}}
+                    </div>
+
+                  {%endfor %}
+              {% endif %}
                 {% block content%}
+
                 {% endblock %}
             </div>
             <div class="col-md-1"></div>
