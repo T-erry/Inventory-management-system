@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import Inventory
 from django.contrib.auth.decorators import login_required
-from .forms import AddInventoryForm
+from .forms import AddInventoryForm, UpdateInventoryForm
 
 
 
@@ -55,8 +55,23 @@ def delete_inventory(request, id):
     inventory.delete()
     return redirect("/inventory/")
 
+def update_inventory(request, id):
+    inventory = get_object_or_404(Inventory, pk=id)
+    
+    if request.method == 'POST':
+        update_form = UpdateInventoryForm(data=request.POST)
+        if update_form.is_valid():
+            inventory.name = update_form.cleaned_data['name']
+            inventory.cost_per_item = update_form.cleaned_data['cost_per_item']
+            inventory.quantity_in_stock = update_form.cleaned_data['quantity_in_stock']
+            inventory.quantity_sold = update_form.cleaned_data['quantity_sold']
+            inventory.sales = float(update_form.cleaned_data['cost_per_item']) * float(update_form.cleaned_data['quantity_sold'])
+            inventory.save()
+            return redirect(f"/inventory/per_product/{id}")
+    else:
+         # Initialize form with inventory data for GET request
+        update_form = UpdateInventoryForm(instance=inventory) 
 
-
-
-        
+    context = {"form": update_form}
+    return render(request, "inventory/update_inventory.html", context=context)
 
