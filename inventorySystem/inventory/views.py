@@ -1,14 +1,90 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import Inventory
 from django.contrib.auth.decorators import login_required
-from .forms import AddInventoryForm, UpdateInventoryForm
+from .forms import AddInventoryForm, UpdateInventoryForm, UserRegistrationForm
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.contrib.auth import get_user_model
+
+from .tokens import account_activation_token
+
+
 
 
 
 
 
 # Create your views here.
+# @user_not_authenticated
+
+def activate(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+
+        messages.success(request, 'Thank you for your email confirmation. Now you can login your account.')   
+        return redirect('login')
+    else:
+        messages.error(request, 'Activation link is invalid!')
+    
+    return redirect('/inventory/')
+
+
+def activateEmail(request, user, to_email):
+    mail_subject = 'Activate your user account.'
+    message = render_to_string('inventory_system/activate_account.html', {
+        'user': user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        messages.success(request, f'Dear {user}, please go to you email {to_email} inbox and click on \
+            received activation link to confirm and complete the registration. Note: Check your spam folder.')
+    else:
+        messages.error(request, f'Problem sending confirmation email to {to_email}, check if you typed it correctly.')
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            # Save the user
+            user = form.save(commit=False)
+            #user needs to have an activated email address
+            user.is_active= False
+            user.save()
+            activateEmail(request, user, form.cleaned_data.get('email'))
+            return redirect('/inventory/')  # Redirect to inventory page
+        else:
+            # Log the form errors
+            for error in list(form.errors.values()):
+                print(error)
+    else:
+        form = UserRegistrationForm()
+
+    context ={
+            "form":form
+        }
+
+
+    return render(request, "inventory_system/sign_up.html", context)
+
+
+
 @login_required
 def inventory_list(request):
     inventories = Inventory.objects.all()
