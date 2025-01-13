@@ -1,7 +1,7 @@
 from django import forms 
 from .models import Inventory
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm, PasswordResetForm
 
 # Create the form class.
 class AddInventoryForm(forms.ModelForm):
@@ -15,6 +15,7 @@ class UpdateInventoryForm(forms.ModelForm):
     class Meta:
         model = Inventory
         fields = ['name', 'cost_per_item', 'quantity_in_stock', 'quantity_sold']
+
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -31,3 +32,12 @@ class UserRegistrationForm(UserCreationForm):
             user.save()  # Save to the database
         return user   
 
+class SetPasswordForm(SetPasswordForm):
+    class Meta:
+        model = User
+        fields = ['new_password', 'new_password2']
+
+class PasswordResetForm(PasswordResetForm):
+    class Meta:
+        model = User
+        fields = ['new_password', 'new_password2']

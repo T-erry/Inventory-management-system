@@ -14,12 +14,18 @@
             <div class="form-group pt-4">
                 <button type="submit" class="btn btn-outline-success">Login</button>
             </div>
+          
         </fieldset>
     </form>
     <div class="border-top pt-3 mt-2">
         <small class="text-muted">
             Don't have an Account? <a href ="{% url 'signup' %}">Signup</a>
         </small>
+        <div>
+        <small class="text-muted">
+             <a href ="{% url 'password_reset' %}">Forgot password</a>
+        </small>
+    </div>
 
     </div>
 </div>
