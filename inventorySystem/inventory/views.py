@@ -12,6 +12,11 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.db.models.query_utils import Q
+from django_pandas.io import read_frame
+import plotly
+from plotly.utils import PlotlyJSONEncoder
+import plotly.express as px
+import json
 
 from .tokens import account_activation_token
 
@@ -238,4 +243,43 @@ def passwordResetConfirm(request, uidb64, token):
 
     messages.error(request, 'Something went wrong, try again')
     return redirect("/login")
-    
+
+@login_required
+def dashboard(request):
+    # Fetch all inventory records from the database
+    inventories = Inventory.objects.all()
+    # Convert the QuerySet/data to a Pandas DataFrame
+    df = read_frame(inventories)
+
+    # Group data by 'last_sale_date' and sum up the sales
+    sales_graph = df.groupby(by="last_sale_date", as_index=False, sort=False)['sales'].sum()
+    # Create a Plotly line chart
+    sales_graph = px.line(sales_graph, x="last_sale_date", y="sales", title="Sales Trend")
+    # Convert the Plotly figure to JSON for rendering in the template
+    sales_graph = json.dumps(sales_graph, cls=PlotlyJSONEncoder)
+
+    best_performing_product_df = df.groupby(by="name").sum().sort_values(by="quantity_sold")
+    best_performing_product = px.bar(best_performing_product_df,
+                                     x=best_performing_product_df.index,
+                                     y=best_performing_product_df.quantity_sold,
+                                     title="Best Performing Product")
+
+    best_performing_product = json.dumps(best_performing_product, cls=PlotlyJSONEncoder)
+
+
+    most_product_in_stock_df = df.groupby(by="name").sum().sort_values(by="quantity_in_stock")
+    most_product_in_stock = px.pie(most_product_in_stock_df, 
+                                   names = most_product_in_stock_df.index,
+                                   values= most_product_in_stock_df.quantity_in_stock,  
+                                   title = "Most Product In stock"
+                                       )
+    most_product_in_stock = json.dumps(most_product_in_stock, cls=PlotlyJSONEncoder)
+
+    # Pass the graphs to the template
+    context = {
+        "sales_graph": sales_graph,
+        "best_performing_product": best_performing_product,
+        "most_product_in_stock" : most_product_in_stock
+    }
+
+    return render(request, "inventory/dashboard.html", context=context)
