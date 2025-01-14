@@ -22,6 +22,7 @@ To run this project, you need to have the following installed on your local mach
 3. Plotly (for data visualization)
 4. django-pandas (for data processing)
 5. Other dependencies: See requirements.txt
+
 ### technologies used
 - Django
 - SQLite
@@ -30,3 +31,6 @@ To run this project, you need to have the following installed on your local mach
 
 ## License and Copyright Information
 Licensed under [MIT] ("https://github.com/T-erry/Inventory-management-system/blob/main/LICENSE")
+
+
+
