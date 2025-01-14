@@ -7,10 +7,10 @@ This project is an Inventory Management System built using Django. It allows use
 
 ### API Endpoints
 - GET /inventory: Returns a list of all inventories in JSON format.
-- GET /per_product/<id>: Returns details of a single inventory item.
+- GET /per_product/id: Returns details of a single inventory item.
 - POST /add_inventory' Creates a new inventory item.
-- PUT /update/<id>: Updates an existing inventory item.
-- DELETE /delete/<id>: Deletes an inventory item.
+- PUT /update/id: Updates an existing inventory item.
+- DELETE /delete/id: Deletes an inventory item.
 -  Reports:
     The dashboard at /dashboard will display visual reports, including sales trends, best-performing products, and inventory stock status.
 
