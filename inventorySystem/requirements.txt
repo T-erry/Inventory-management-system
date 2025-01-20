@@ -2,7 +2,7 @@ asgiref==3.8.1
 backports.zoneinfo==0.2.1
 click==8.1.8
 crispy-bootstrap5==2024.10
-Django==3.2.1
+Django==4.2
 django-crispy-forms==2.3
 django-environ==0.11.2
 django-pandas==0.6.7
@@ -11,7 +11,9 @@ h11==0.14.0
 numpy==1.24.4
 packaging==24.2
 pandas==2.0.3
+pkg_resources==0.0.0
 plotly==5.24.1
+psycopg2==2.9.10
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
