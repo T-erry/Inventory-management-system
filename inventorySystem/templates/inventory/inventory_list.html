@@ -14,7 +14,7 @@
                 <th scope="col">Last Sales Date</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="ms-4">
             {% for inventory in inventories%}
             <tr style="cursor: pointer; cursor: hand;" onClick="window.location = `{% url 'per_product' inventory.id%}`">
               <th scope="row">{{forloop.counter}}</th>
