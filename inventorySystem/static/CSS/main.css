@@ -8,3 +8,11 @@ body{
     border-radius: 10px;
 }
 
+  @media (max-width: 576px) { /* Targets screens smaller than Bootstrap's 'sm' breakpoint */
+    .card-body {
+      font-size: 10px; /* Adjust font size for small screens */
+    }
+  }
+
+
+
