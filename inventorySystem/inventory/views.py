@@ -41,11 +41,11 @@ def activate(request, uidb64, token):
         user.save()
 
         messages.success(request, 'Thank you for your email confirmation. Now you can login your account.')   
-        return redirect('login/')
+        return redirect('login')
     else:
         messages.error(request, 'Activation link is invalid!')
     
-    return redirect('/inventory/')
+    return redirect('/inventory')
 
 
 def activateEmail(request, user, to_email):
