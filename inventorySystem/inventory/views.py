@@ -108,7 +108,10 @@ def password_change(request):
 
 @login_required
 def inventory_list(request):
-    inventories = Inventory.objects.all()
+    if request.user.is_superuser:
+        inventories = Inventory.objects.all()
+    else:
+        inventories = Inventory.objects.filter(user=request.user)
     context ={
         "title" : "Inventory list",
         "inventories": inventories
@@ -122,12 +125,15 @@ def inventory_list(request):
 @login_required
 def per_product_view(request, id):
     inventory = get_object_or_404(Inventory, pk=id)
-    context = {
-        'inventory': inventory,
-    }
+    if request.user.is_superuser or inventory.user == request.user:  # Allow admins or the owner to view
+        context = {
+            'inventory': inventory,
+        }
 
-    return render(request, "inventory/per_product.html", context=context)
-
+        return render(request, "inventory/per_product.html", context=context)
+    else:
+        messages.error(request, "You do not have permission to view this inventory.")
+        return redirect("/inventory/")
 
 @login_required
 def add_inventory(request):
@@ -140,6 +146,8 @@ def add_inventory(request):
             new_inventory = add_form.save(commit=False)
             # Calculate the total sales
             new_inventory.sales = float(add_form.cleaned_data['cost_per_item']) * float(add_form.cleaned_data['quantity_sold'])
+            #Associate the inventory with the logged-in user
+            new_inventory.user = request.user
             new_inventory.save()
             messages.success(request, "Successfully Added Inventory" )
             return redirect("/inventory/")
@@ -152,15 +160,21 @@ def add_inventory(request):
 
 @login_required
 def delete_inventory(request, id):
-    inventory = get_object_or_404(Inventory, pk=id)
-    inventory.delete()
-    messages.error(request, "Inventory Deleted")
-    return redirect("/inventory/")
+    if request.user.is_superuser or inventory.user == request.user:  # Allow admins or the owner to delete
+        inventory.delete()
+        messages.success(request, "Inventory Deleted")
+    else:
+        messages.error(request, "You do not have permission to delete this inventory.")
+
+    return redirect("/inventory")
 
 @login_required
 def update_inventory(request, id):
     inventory = get_object_or_404(Inventory, pk=id)
-    
+    if not (request.user.is_superuser or inventory.user == request.user):  # Restrict access
+        messages.error(request, "You do not have permission to update this inventory.")
+        return redirect("/inventory")
+
     if request.method == 'POST':
         update_form = UpdateInventoryForm(data=request.POST)
         if update_form.is_valid():
@@ -246,8 +260,11 @@ def passwordResetConfirm(request, uidb64, token):
 
 @login_required
 def dashboard(request):
+    if request.user.is_superuser:
     # Fetch all inventory records from the database
-    inventories = Inventory.objects.all()
+        inventories = Inventory.objects.all()
+    else:
+        inventories = Inventory.objects.filter(user=request.user)  # Users can only see their own inventories
     # Convert the QuerySet/data to a Pandas DataFrame
     df = read_frame(inventories)
 
