@@ -2,7 +2,11 @@
 This project is an Inventory Management System built using Django. It allows users to perform basic CRUD (Create, Read, Update, Delete) operations on inventory items. Additionally, users can generate reports to analyze inventory performance.
 
 ## How to Use
-- Sign Up and Log In- Navigate to /signup/ to create a new account. You'll receive an email for account activation.
+- Sign Up and Log In- Navigate to signup to create a new account. You'll receive an email for account activation.
+  - User Roles
+    - Admin: Admins have full CRUD (Create, Read, Update, Delete) access to all inventory items.
+    - Regular User: Regular users can Create, Read, Update, and Delete only their own invetory items.They cannot manage inventory belonging to other users.
+    - 
 - Once logged in, you can:
 
 ### API Endpoints
